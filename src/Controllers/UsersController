@@ -1,10 +1,12 @@
 const AppError = require("../utils/AppError");
 
+const sqliteConnection = require("../database/sqlite");
+
 class UsersController {
     async create(request, response) {
         const {Name, Email, Password} = request.body;
 
-        
+        const database = await sqliteConnection();
         const checkUserExist = await database.get("SELECT * FROM user WHERE email = (?)", [Email]);
 
         if(checkUserExist) {
