@@ -1,0 +1,20 @@
+const AppError = require("../utils/AppError");
+
+class UsersController {
+    async create(request, response) {
+        const {Name, Email, Password} = request.body;
+
+        
+        const checkUserExist = await database.get("SELECT * FROM user WHERE email = (?)", [Email]);
+
+        if(checkUserExist) {
+            throw new AppError("Este email ja está em uso.")
+        }
+
+        await database.run("INSERT INTO users (Name, Email, Password) VALUES (?, ?, ?)", [Name, Email, Password]);
+
+        return response.status(201).json();  
+    }
+}
+
+module.exports = UsersController;

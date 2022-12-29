@@ -1,0 +1,30 @@
+{
+  "name": "desafio-back-end",
+  "version": "1.0.0",
+  "description": "Desafio do Stage 08 do Programa Explorer",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "dev": "nodemon ./src/server.js",
+    "migrate": "knex migrate:latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FabioVascao/Desafio-Back-End.git"
+  },
+  "keywords": [],
+  "author": "Fabio de Sousa Santos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FabioVascao/Desafio-Back-End/issues"
+  },
+  "homepage": "https://github.com/FabioVascao/Desafio-Back-End#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "knex": "^2.3.0",
+    "nodemon": "^2.0.20",
+    "sqlite": "^4.1.2",
+    "sqlite3": "^5.1.4"
+  }
+}
