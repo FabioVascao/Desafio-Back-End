@@ -1,3 +1,4 @@
+const {hash, compare, genSalt} = require("bcryptjs");
 const AppError = require("../utils/AppError");
 
 const sqliteConnection = require("../database/sqlite");
@@ -7,15 +8,63 @@ class UsersController {
         const {Name, Email, Password} = request.body;
 
         const database = await sqliteConnection();
-        const checkUserExist = await database.get("SELECT * FROM user WHERE email = (?)", [Email]);
+        const checkUserExist = await database.get("SELECT * FROM users WHERE email = (?)", [Email]);
 
         if(checkUserExist) {
-            throw new AppError("Este email ja está em uso.")
+            throw new AppError("Este email ja está em uso.");
         }
+
+        const hashedPassword = await hash(Password, 8);
 
         await database.run("INSERT INTO users (Name, Email, Password) VALUES (?, ?, ?)", [Name, Email, Password]);
 
         return response.status(201).json();  
+    }
+
+    async update(request, response) {
+        const {Name, Email, Password, old_password} = request.body;
+        const { id } = request.params;
+
+        const database = await sqliteConnection();
+        const user = await database.get("SELECT * FROM users WHERE id = (?)", [id]);
+
+        if(!user) {
+            throw new AppError("Usuário não encontrado.");
+        }
+
+        const userWithUpdatedEmail = await database.get("SELECT * FROM users WHERE Email = (?)", [Email]);
+
+        if(userWithUpdatedEmail && userWithUpdatedEmail.id !== user.id){
+            throw new AppError("Este email ja está em uso.");
+        }
+
+        user.Name = Name ?? user.Name;
+        user.Email = Email ?? user.Email;
+
+        if(Password && !old_password){
+            throw new AppError("Você precisa informar a senha antiga.")
+        }
+
+        if(Password && old_password){
+            const checkOldPassword = await compare(old_password, user.Password);
+
+            if(!checkOldPassword) {
+                throw new AppError("Senha antiga não confere.");
+            }
+
+            user.Password = await hash(Password, 8);
+        }
+
+        await database.run(`
+            UPDATE users SET
+            Name = ?,
+            Email = ?,
+            Password = ?,
+            updated_at = DATETIME('now')
+            WHERE id = ?`,
+            [user.Name, user.Email, user.Password, id]);
+
+            return response.status(200).json();
     }
 }
 
