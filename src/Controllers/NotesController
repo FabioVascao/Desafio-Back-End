@@ -8,14 +8,14 @@ class NotesController{
 
         if(Rating <= 0 || Rating > 5) {
             throw new AppError("O Rating do filme deve estar entre 1 e 5");
-        } 
-
-        const movies_note_id = await knex("movies_notes").insert({
-            Title,
-            Description,
-            Rating,
-            user_id
-        });
+        } else {
+            const movies_note_id = await knex("movies_notes").insert({
+                Title,
+                Description,
+                Rating,
+                user_id
+            });
+        }
 
         response.json();
     }
