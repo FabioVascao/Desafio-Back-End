@@ -1,6 +1,6 @@
 const {hash, compare, genSalt} = require("bcryptjs");
 const AppError = require("../utils/AppError");
-
+const knex = require("../database/knex");
 const sqliteConnection = require("../database/sqlite");
 
 class UsersController {

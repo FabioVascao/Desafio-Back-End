@@ -1,0 +1,17 @@
+const knex = require("../database/knex");
+
+class TagsController {
+    async create(request, response) {
+        const {Name} = request.body;
+        const {user_id} = request.params;
+
+        const Movies_tag_id = await knex("Movies_tags").insert({
+                Name,
+                user_id
+        })
+
+        response.json();  
+    }
+}
+
+module.exports = TagsController;
