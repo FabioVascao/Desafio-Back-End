@@ -1,5 +1,6 @@
 const knex = require("../database/knex");
 const AppError = require("../utils/AppError");
+const sqliteConnection = require("../database/sqlite");
 
 class NotesController{
     async create(request, response) {
@@ -36,6 +37,27 @@ class NotesController{
         await knex("movies_notes").where({id}).delete();
 
         return response.json();
+    }
+
+    async index(request, response) {
+        const { user_id, movies_notes_id } = request.query; 
+        const note = await knex("movies_notes")
+        .where({ user_id })
+        .orderBy("title");
+        
+        const database = await sqliteConnection();
+        const notesId = await database.get("SELECT id FROM movies_notes WHERE id = (?)", [movies_notes_id]);
+        const userTags = await knex("Movies_Tags").where({user_id});
+        const notesWithTags = note.map(note => {
+            const noteTags = userTags.filter(tags => tags.movies_notes_id === note.id);
+
+            return { 
+                ...note,
+                tags: noteTags
+            }
+        });
+
+        return response.json(notesWithTags);
     }
 }
 

@@ -1,16 +1,28 @@
 const knex = require("../database/knex");
+const AppError = require("../utils/AppError");
+const sqliteConnection = require("../database/sqlite");
 
 class TagsController {
     async create(request, response) {
         const {Name} = request.body;
         const {user_id, movies_notes_id} = request.params;
+        const database = await sqliteConnection();
+        const userId = await database.get("SELECT id FROM users WHERE id = (?)", [user_id]);
+        const notesId = await database.get("SELECT user_id FROM movies_notes WHERE id = (?)", [movies_notes_id]);
 
-        const Movies_Tag_id = await knex("Movies_Tags").insert({
+        if(!userId || !notesId) {
+            throw new AppError("Usuário ou Nota não encontrado.");
+        } 
+        
+        if(userId.id == notesId.user_id) {
+            const Movies_Tag_id = await knex("Movies_Tags").insert({
                 Name,
                 movies_notes_id,
                 user_id
         })
-
+        } else {
+            throw new AppError("Está nota não pertence a este usuário.");
+        }
         response.json();  
     }
 }
