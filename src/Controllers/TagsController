@@ -3,10 +3,11 @@ const knex = require("../database/knex");
 class TagsController {
     async create(request, response) {
         const {Name} = request.body;
-        const {user_id} = request.params;
+        const {user_id, movies_notes_id} = request.params;
 
-        const Movies_tag_id = await knex("Movies_tags").insert({
+        const Movies_Tag_id = await knex("Movies_Tags").insert({
                 Name,
+                movies_notes_id,
                 user_id
         })
 

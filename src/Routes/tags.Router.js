@@ -6,6 +6,6 @@ const tagsRouter = Router();
 
 const tagsController = new TagsController();
 
-tagsRouter.post("/:user_id", tagsController.create);
+tagsRouter.post("/:user_id/:movies_notes_id", tagsController.create);
 
 module.exports = tagsRouter;
